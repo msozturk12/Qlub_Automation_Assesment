@@ -1,9 +1,7 @@
 import pytest
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
 
@@ -13,7 +11,7 @@ def browser():
     chr_options = Options()
     chr_options.add_experimental_option("detach", True)
     global driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome()
     driver.implicitly_wait(10)
     driver.maximize_window()
 
@@ -46,13 +44,13 @@ def test_payment(browser):
 
     # Click on Tip option and choose one
     time.sleep(3)
-    driver.find_element(By.XPATH, "(//div[@class='MuiBox-root css-1tpu0u3'])[3]").click()
+    driver.find_element(By.XPATH, "(//div[@class='TipInputs_tipScrollable__C3Zsu']/div)[3]").click()
 
-    ## Enter information card
+    # Enter information card
     # EnterCardNumber
     driver.switch_to.frame("cardNumber")  # ıd
     card_number = driver.find_element(By.ID, "checkout-frames-card-number")
-    card_number.send_keys("4242 4242 4242 4242")
+    card_number.send_keys("4242424242424242")
     driver.switch_to.default_content()
     time.sleep(2)
     # EnterExpiryDate
@@ -60,19 +58,19 @@ def test_payment(browser):
     expiry_date = driver.find_element(By.ID, "checkout-frames-expiry-date")
     expiry_date.send_keys("02/26")
     driver.switch_to.default_content()
-    time.sleep(1)
+    time.sleep(2)
     # EnterCvv
-    driver.switch_to.frame("cvv") #ıd
+    driver.switch_to.frame("cvv")  # ıd
     cvv = driver.find_element(By.ID, "checkout-frames-cvv")
     cvv.send_keys("100")
     driver.switch_to.default_content()
-    time.sleep(3)
+    time.sleep(2)
 
     # Click on pay button
     driver.find_element(By.XPATH, "//button[@id='checkout-action-btn']").click()
     time.sleep(10)
 
     # verify redirect to successful payment page
-    element = browser.find_element(By.XPATH, "(//p[@class='MuiTypography-root MuiTypography-body1 css-1dbb4wf'])[1]")
+    element = browser.find_element(By.XPATH, "//p[contains(text(),'Payment was successful!')]")
     element_text = element.text
     assert element_text == "Payment was successful!"
